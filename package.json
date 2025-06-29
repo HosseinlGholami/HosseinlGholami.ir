@@ -2,7 +2,7 @@
   "name": "hossein-gholami-personal-website",
   "version": "1.0.0",
   "description": "Personal website for Hossein Gholami - Developer Portfolio",
-  "homepage": "https://hosseingholami.github.io/HosseinlGholami.ir",
+  "homepage": "https://hosseingholami.github.io",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
