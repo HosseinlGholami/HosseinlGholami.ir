@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300;
+  }
+  
+  .section-padding {
+    @apply py-16 px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Blog content styles */
+  .prose {
+    @apply text-gray-800;
+  }
+
+  .prose h2 {
+    @apply text-3xl font-bold text-gray-900 mt-8 mb-4;
+  }
+
+  .prose h3 {
+    @apply text-2xl font-semibold text-gray-900 mt-6 mb-3;
+  }
+
+  .prose h4 {
+    @apply text-xl font-semibold text-gray-900 mt-4 mb-2;
+  }
+
+  .prose p {
+    @apply text-gray-700 leading-relaxed mb-4;
+  }
+
+  .prose ul {
+    @apply list-disc list-inside space-y-2 mb-4;
+  }
+
+  .prose ol {
+    @apply list-decimal list-inside space-y-2 mb-4;
+  }
+
+  .prose li {
+    @apply text-gray-700;
+  }
+
+  .prose strong {
+    @apply font-semibold text-gray-900;
+  }
+
+  .prose .image-container {
+    @apply my-8;
+  }
+
+  .prose .image-container img {
+    @apply w-full rounded-lg shadow-lg;
+  }
+
+  .prose .image-container p {
+    @apply text-center text-gray-600 mt-2 text-sm;
+  }
+
+  .prose .blog-highlight-box {
+    @apply bg-gray-50 p-6 rounded-lg my-6;
+  }
+
+  .prose .blog-grid {
+    @apply grid md:grid-cols-2 gap-6 my-6;
+  }
+
+  .prose .blog-stats-box {
+    @apply bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg my-6;
+  }
+
+  .prose .blog-note-box {
+    @apply bg-yellow-50 border-l-4 border-yellow-400 p-4 my-6;
+  }
+} 
