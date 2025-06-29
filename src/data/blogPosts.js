@@ -2,7 +2,7 @@ export const blogPosts = [
   {
     slug: 'put-to-light',
     title: 'Put-to-Light Project',
-    image: '/images/put-to-light-system.jpg',
+    image: '/images/coding.jpg',
     description: 'A deep dive into the Put-to-Light warehouse management system, its architecture, and implementation.',
     date: '2024-06-29',
     contentFile: 'put-to-light.html',
