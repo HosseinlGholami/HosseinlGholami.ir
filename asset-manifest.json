@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/HosseinlGholami.ir/static/css/main.fd6bd685.css",
-    "main.js": "/HosseinlGholami.ir/static/js/main.d636cdc6.js",
-    "index.html": "/HosseinlGholami.ir/index.html",
-    "main.fd6bd685.css.map": "/HosseinlGholami.ir/static/css/main.fd6bd685.css.map",
-    "main.d636cdc6.js.map": "/HosseinlGholami.ir/static/js/main.d636cdc6.js.map"
+    "main.css": "/static/css/main.fd6bd685.css",
+    "main.js": "/static/js/main.85d413c7.js",
+    "index.html": "/index.html",
+    "main.fd6bd685.css.map": "/static/css/main.fd6bd685.css.map",
+    "main.85d413c7.js.map": "/static/js/main.85d413c7.js.map"
   },
   "entrypoints": [
     "static/css/main.fd6bd685.css",
-    "static/js/main.d636cdc6.js"
+    "static/js/main.85d413c7.js"
   ]
 }
