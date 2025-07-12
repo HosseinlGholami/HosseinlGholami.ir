@@ -56,7 +56,7 @@ const Blog = () => {
       </section>
       
       {/* Instructions Section */}
-      <section className="section-padding bg-white">
+      {/* <section className="section-padding bg-white">
         <div className="max-w-4xl mx-auto">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <h3 className="text-lg font-semibold text-blue-900 mb-3">📸 How to Add Your Images</h3>
@@ -74,7 +74,7 @@ const Blog = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };
