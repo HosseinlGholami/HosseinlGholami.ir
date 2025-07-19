@@ -1,0 +1,147 @@
+<div class="blog-content">
+  <h2>Smart Scale V1: Industrial Weighing Meets Embedded Intelligence</h2>
+  <p>
+    Weighing may seem simple, but in logistics, accuracy, automation, and uptime are non-negotiable. At Digikala, our Robotics team designed the Smart Scale to optimize weight measurement in fast-paced environments. It's more than just a weighing device — it’s a connected, precise, and easy-to-use system that reduces human error, integrates with our backend, and boosts operational efficiency.
+  </p>
+
+  <h3>Why We Built It</h3>
+  <p>
+    Traditional scales in industrial setups are often prone to errors, require manual intervention, and don’t integrate easily with WMS platforms. Our goal was to eliminate drift, downtime, and disconnected processes — and create a durable smart device that communicates weight data in real time, works with minimal buttons, and is intuitive even for new operators.
+  </p>
+
+  <h3>Key Features</h3>
+  <ul>
+    <li>✔ High-precision load cell with &lt;11.5g error on 50kg capacity</li>
+    <li>✔ Auto-sends weight to server via MQTT over Wi-Fi </li>
+    <li>✔ Works >48h on rechargeable battery; standard 220V power</li>
+    <li>✔ OTA firmware updates supported</li>
+    <li>✔ Physical indicators and intuitive controls reduce training needs</li>
+  </ul>
+
+  <h3>How It Works</h3>
+  <p>
+    Operators place a package on the weighing platform. A <strong>Zemic L6E-C3</strong> load cell detects the applied force and sends a small analog voltage signal to the <strong>HX711</strong> module. The HX711 amplifies and digitizes the signal and passes it to the <strong>ESP32</strong> microcontroller. The ESP32 processes the weight value, transmits it to the backend via <strong>MQTT</strong>, and indicates device status using integrated LEDs.
+  </p>
+  
+  <p>
+    The device is designed with simplicity in mind — only two buttons control it:
+  </p>
+  <ul>
+    <li><strong>Power Button:</strong> A two-position toggle switch. Pressing inward turns the device on, pulling outward turns it off.</li>
+    <li><strong>Reset Button:</strong> Instantly zeroes the scale. A flashing LED confirms each reset action.</li>
+  </ul>
+  
+  <p>
+    A <strong>Django-based server</strong> manages the system’s backend logic. It exposes RESTful APIs that:
+  </p>
+  <ul>
+    <li>Allow the WMS (Warehouse Management System) to request live weight readings.</li>
+    <li>Send <strong>MQTT commands</strong> to the ESP32 to fetch weight, perform resets, or change configuration values.</li>
+    <li>Enable real-time updates to device parameters such as battery thresholds or calibration coefficients — all from a web UI.</li>
+  </ul>
+  
+  <p>
+    Additionally, the Smart Scale supports <strong>OTA (Over-the-Air)</strong> firmware updates, allowing engineers to push new features or bug fixes without physical access to the device.
+  </p>
+
+
+  <section id="smart-scale-architecture">
+
+    <h2>Smart Scale System Architecture</h2>
+    <p>
+      The Smart Scale is a modular, connected device designed for precise weight measurement and remote integration in warehouse environments. Its architecture is divided into mechanical, electronic, embedded software, and server layers.
+    </p>
+  
+    <!-- Mechanical Design -->
+    <h3>⚙️ Mechanical Design</h3>
+    <div class="image-container">
+      <img src="/images/ss/mec.png" alt="Mechanical Design - Smart Scale" style="width: 90%; border: 1px solid #ddd; border-radius: 8px;">
+      <p>
+        <strong>Figure:</strong> Mechanical layout of the scale with dimensions.
+      </p>
+    </div>
+    <p>
+      The 370×370mm MDF platform is mounted on a precision load cell and housed in a vibration-dampened aluminum chassis. Adjustable feet ensure stability and alignment, critical for accurate readings in industrial environments.
+    </p>
+  
+    <!-- Electronics Design -->
+    <h3>🔌 Electronics Design</h3>
+    <div class="image-container">
+      <img src="/images/ss/elec.png" alt="Electronics Design - Smart Scale" style="width: 90%; border: 1px solid #ddd; border-radius: 8px;">
+      <p>
+        <strong>Figure:</strong> Power distribution and sensor interfacing architecture.
+      </p>
+    </div>
+    <p>
+      The system receives power from a 220V AC source, which is stepped down and regulated through TPS and AMS1117 modules. An ESP32 microcontroller coordinates weight sensing via the HX711, manages user input (on/off/reset), and drives status LEDs. A CH340 module is used for programming, and power redundancy is supported via battery regulation.
+    </p>
+  
+    <!-- Embedded Software Design -->
+    <h3>🧠 Embedded Software Design</h3>
+    <div class="image-container">
+      <img src="/images/ss/embed.PNG" alt="Embedded Software Architecture" style="width: 90%; border: 1px solid #ddd; border-radius: 8px;">
+      <p>
+        <strong>Figure:</strong> Firmware layer interaction and component responsibilities.
+      </p>
+    </div>
+    <p>
+      The embedded firmware is modularized to handle power management, sensor acquisition, configuration persistence, and connectivity. Each component is designed to operate independently while communicating through shared parameters or message queues.
+    </p>
+    
+    <ul>
+      <li><strong>Uplink</strong>: Publishes MQTT messages to the server and handles parameter updates.</li>
+      <li><strong>Wi-Fi</strong>: Connects to the local network using DHCP and EAP (PEAP) authentication.</li>
+      <li><strong>OTA</strong>: Fetches firmware updates from the server and applies them upon command via Uplink.</li>
+      <li><strong>Param</strong>: Manages runtime configuration, calibration values, and storage in RAM or NVRAM.</li>
+      <li><strong>Database</strong>: Provides local persistence of recent parametersusing NVRAM.</li>
+      <li><strong>HX711</strong>: Interfaces with the load cell to read and convert analog measurements into digital values.</li>
+      <li><strong>Battery Manager</strong>: Monitors battery voltage and charging status to ensure reliable operation.</li>
+      <li><strong>LED Manager</strong>: Controls status indicators for power, battery, and buttons.</li>
+    </ul>
+  
+    <h3>🖥 Server Software Design</h3>
+    <div class="image-container">
+      <img src="/images/ss/server.png" alt="Server Architecture" style="width: 90%; border: 1px solid #ddd; border-radius: 8px;">
+      <p><strong>Figure:</strong> Docker-based deployment of the backend system and its service dependencies.</p>
+    </div>
+    
+    <p>
+      The backend architecture orchestrates all communication between the user interface, database, and IoT devices. It is containerized using Docker and includes the following components:
+    </p>
+    
+    <ul>
+      <li><strong>Nginx</strong>: Acts as a reverse proxy for routing HTTP(S) traffic and serves the static files of the React application.</li>
+      <li><strong>Django</strong>: Hosts the RESTful API for controlling devices and accessing historical data. Integrated with Celery to run background tasks.</li>
+      <li><strong>MySQL</strong>: Stores weight measurements, configuration parameters, and calibration history.</li>
+      <li><strong>RabbitMQ + Celery</strong>: Implements a distributed task queue to handle asynchronous jobs such as OTA updates, parameter synchronization, and scheduled tasks.</li>
+      <li><strong>React App</strong>: A responsive, browser-based interface for administrators and operators to interact with devices and data.</li>
+      <li><strong>RabbitMQ (MQTT)</strong>: Facilitates real-time communication between the Django backend and ESP32 devices using MQTT protocol.</li>
+    </ul>
+      
+  </section>
+  
+
+  <h3>Measured Results</h3>
+  <div class="blog-stats-box">
+    <h4>Performance Metrics:</h4>
+    <div class="grid md:grid-cols-3 gap-4 text-center">
+      <div>
+        <div class="text-2xl font-bold text-green-600">≤11.5g</div>
+        <div class="text-sm text-gray-600">Max error at 50kg</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-blue-600">48+ hours</div>
+        <div class="text-sm text-gray-600">Battery Operation</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-purple-600">100%</div>
+        <div class="text-sm text-gray-600">Server Uptime Coverage</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Conclusion</h3>
+  <p>
+    The Smart Scale is proof that embedded engineering, when paired with simple UX and robust backend integration, can dramatically improve day-to-day warehouse operations. It’s precise, intuitive, and field-tested — a scalable tool for any modern fulfillment center.
+  </p>
+</div>

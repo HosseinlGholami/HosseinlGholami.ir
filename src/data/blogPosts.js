@@ -8,6 +8,14 @@ export const blogPosts = [
     contentFile: 'put-to-light.html',
   },
   {
+    slug: 'smart-scale-v1',
+    title: 'Smart Scale V1',
+    image: '/images/smart-scale.jpg',
+    description: 'Modular Smart Scale with high-precision weighing, wireless connectivity, and seamless IoT integration for industrial use.',
+    date: '2025-07-19',
+    contentFile: 'smart-scale.html',
+  },
+    {
     slug: 'mountain-trip',
     title: 'My Trip to the Mountains',
     image: '/images/mountains.jpg',
