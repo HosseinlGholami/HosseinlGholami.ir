@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>A Deep Dive into the Automatic Dimension Detection System</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+    h3, h4 { color: #333366; }
+    ul { margin-bottom: 20px; }
+    .text-center { text-align: center; }
+    .text-sm { font-size: 0.9em; color: gray; }
+    .mx-auto { margin-left: auto; margin-right: auto; display: block; }
+  </style>
+</head>
+<body>
+
+<h1>A Deep Dive into the Automatic Dimension Detection System</h1>
+<h2>Subtitle: From AI-assisted vision and Lidar scanning to accurate, scalable dimensioning at industrial scale</h2>
+
+<p>
+  In high-throughput fulfillment centers, inaccurate product dimensions can quietly drain operational efficiency and profitability. A wrong dimension reading doesn’t just cause bad packaging—it cascades across the entire logistics chain:
+</p>
+<ul>
+  <li>🧾 When preparing outbound parcels, underestimated weight or volume can trigger <strong>postal penalties and overcharges</strong>.</li>
+  <li>📦 Inappropriate box selection leads to <strong>increased material waste</strong> and <strong>carton mismatch</strong>, inflating cost per order.</li>
+  <li>🏢 At the warehouse level, flawed data skews storage logic, resulting in <strong>underutilized shelf space</strong> and inefficient slotting.</li>
+  <li>📊 Worse, it corrupts the analytics systems that rely on clean data for forecasting, automation, and inventory optimization.</li>
+</ul>
+<p>
+  To solve these issues, we built an intelligent, automated system that captures item dimensions and weight with high precision — reducing human error, eliminating guesswork, and feeding logistics systems with real-world accurate data.
+</p>
+
+<blockquote>
+  This project was led end-to-end by <strong>Hossein Gholami</strong>, from initial prototyping through industrial delivery.
+  As the project owner, Hossein designed the system architecture, managed embedded, mechanical, and software development phases,
+  and drove integration with Digikala’s logistics infrastructure.
+</blockquote>
+
+<h3>System Overview</h3>
+<p>
+  Operators place items within the device boundary. A moving Lidar sensor mounted on a linear actuator scans the object to determine its physical dimensions.
+  Simultaneously, digital load cells capture the item's weight. For thin or transparent items, a high-resolution camera assists with AI-based image processing to estimate dimensions.
+  All measurement data — including barcode, weight, and 3D dimensions — is processed by a Raspberry Pi, transmitted to a local server, and integrated with the <strong>WMS</strong>.
+  Operators interact via a monitor, LED indicators, and a gun scanner for fast and reliable item identification.
+</p>
+
+<p>
+  This <strong>innovative scanner-driven interface</strong> not only simplifies the hardware but also reduces failure points in high-throughput environments where durability and simplicity are key.
+  Since scanning barcodes is already a core part of the workflow, this design eliminates the need for secondary input devices.
+</p>
+
+<h4>UI Design Overview (Figma)</h4>
+<div class="text-center" style="display: flex; flex-wrap: wrap; justify-content: center;">
+  <img src="/images/dd/figma-0.png" alt="UI Step 1" style="width: 48%; margin: 1%;">
+  <img src="/images/dd/figma-1.png" alt="UI Step 2" style="width: 48%; margin: 1%;">
+  <img src="/images/dd/figma-2.png" alt="UI Step 3" style="width: 48%; margin: 1%;">
+  <img src="/images/dd/figma-3.png" alt="UI Step 4" style="width: 48%; margin: 1%;">
+</div>
+<p class="text-sm text-center"> Interface operated entirely through barcode scanning — no mouse or keyboard required</p>
+
+
+<h3>Previous Work</h3>
+<p>
+  The Automatic Dimension Detection project evolved across two major versions. Each iteration reflected field testing,
+  stakeholder feedback, and engineering innovation to solve practical warehouse pain points.
+  In Version 1, the system also supported <strong>operator-supervised dimension labeling</strong> —
+  allowing us to identify edge cases, build a training dataset, and improve the point cloud algorithm in the next version.
+</p>
+
+<h4>Version 1 – First Reliable Prototype with Lidar + Arduino</h4>
+<p>
+  Version 1 was the first complete, working prototype that combined mechanical motion, Lidar-based depth sensing, and embedded control into a unified system.
+  It introduced a practical flow that could scan real items and generate structured dimension data for the first time.
+</p>
+
+<div class="text-center" style="display: flex; flex-wrap: wrap; justify-content: center;">
+  <img src="/images/dd/v2-design.png" alt="System Diagram" style="width: 100%; margin: 1%;">
+</div>
+
+<ul>
+  <li>A <strong>LDS-02 Lidar</strong> was mounted on a motorized linear rail to scan objects placed on the base plate and communicated via serial connection to the host computer</li>
+  <li>An <strong>Arduino Uno</strong> controlled the stepper motor and received serial commands to drive the Lidar precisely along the axis</li>
+  <li>A <strong>QT-based desktop application</strong> ran on the user computer to orchestrate the scan process, generate point cloud data, fit bounding boxes to estimate item dimensions, and save the results locally</li>
+  <li><strong>Weight data</strong> was retrieved via API from a standalone smart scale server and merged with the scan results</li>
+</ul>
+
+<div class="text-center" style="display: flex; flex-wrap: wrap; justify-content: center;">
+  <img src="/images/dd/v2-app.png" alt="QT App Interface" style="width: 48%; margin: 1%;">
+</div>
+
+<p>
+  This version proved the feasibility of automating both vertical and horizontal measurements using affordable hardware. While limitations remained with thin or transparent items, Version 1 successfully enabled:
+</p>
+<ul>
+  <li>Reliable dimensioning for the majority of regular SKUs</li>
+  <li>Clear architectural separation between embedded control and user interface layers</li>
+</ul>
+
+<div class="text-center" style="display: flex; flex-wrap: wrap; justify-content: center;">
+  <img src="/images/dd/v2-device.jpg" alt="V1 Real Device" style="width: 48%; margin: 1%;">
+  <img src="/images/dd/v2-mech.jpg" alt="Mechanical View" style="width: 48%; margin: 1%;">
+</div>
+<p class="text-sm text-center">⬆ Version 1: Physical build, control electronics, and mechanical structure</p>
+
+<h5>Edge Cases Identified</h5>
+<p>
+  While effective for most regular items, Version 1 revealed multiple edge cases that guided improvements in the production version:
+</p>
+<div class="text-center" style="display: flex; justify-content: center; flex-wrap: wrap;">
+  <img src="/images/dd/pr-1.JPG" alt="Edge Case 1" style="width: 32%; margin: 1%;">
+  <img src="/images/dd/pr-2.JPG" alt="Edge Case 2" style="width: 32%; margin: 1%;">
+  <img src="/images/dd/pr-3.JPG" alt="Edge Case 3" style="width: 32%; margin: 1%;">
+</div>
+<p class="text-sm text-center"> Sample edge cases encountered during testing — tight fits, noise, and rotation artifacts</p>
+
+<h3>System Architecture</h3>
+
+<p>
+  The production version (v2) is built around a layered architecture that separates sensor control, edge computation, server-side processing, and integration with Digikala’s WMS ecosystem. Below is the complete connection diagram:
+</p>
+
+<div class="text-center">
+  <img src="/images/dd/arch-v3.JPG" alt="Connection Diagram v2" class="mx-auto" style="width: 100%; max-width: 1000px; margin: 20px 0;">
+</div>
+
+<h4>HMI Devices</h4>
+<ul>
+  <li><strong>Monitor:</strong> Displays the React-based frontend UI in fullscreen (Chromium kiosk mode).</li>
+  <li><strong>Barcode Scanner:</strong> The only input device used by operators. Scanning QR codes triggers specific system actions.</li>
+  <li><strong>LED Strip:</strong> Provides visual feedback (status, errors, progress) and sufficient light for camera image capture.</li>
+</ul>
+
+<h4>Connected Sensors & Interfaces</h4>
+<ul>
+  <li><strong>Lidar (LDS-02):</strong> Scans the item’s top profile. It is connected to the Raspberry Pi over serial and powered by the control board, allowing complete control over its activation.</li>
+  <li><strong>Camera:</strong> Captures high-res images of items during scans to assist with detecting edge cases like transparent or thin items.</li>
+  <li><strong>Smart Scale:</strong> A Wi-Fi-enabled weight module. Sends data to the backend server, which is forwarded to the Raspberry Pi via webhook.</li>
+  <li><strong>Stepper Motor & Limit Switches:</strong> Provides Lidar motion and boundary calibration.</li>
+</ul>
+
+<div class="text-center" style="display: flex; justify-content: center; flex-wrap: wrap;">
+  <div style="width: 45%; margin: 1%;">
+    <img src="/images/dd/camera.JPG" alt="Camera Module" style="width: 100%;">
+    <p class="text-sm">Camera Module – used for edge case image capture</p>
+  </div>
+  <div style="width: 45%; margin: 1%;">
+    <img src="/images/dd/lidar.JPG" alt="Lidar Module" style="width: 100%;">
+    <p class="text-sm">Lidar – generates the point cloud over linear motion</p>
+  </div>
+  <div style="width: 45%; margin: 1%;">
+    <img src="/images/dd/motor.JPG" alt="Stepper Motor" style="width: 100%;">
+    <p class="text-sm">Stepper Motor & End Switches – linear drive for the Lidar</p>
+  </div>
+  <div style="width: 45%; margin: 1%;">
+    <img src="/images/dd/scale.JPG" alt="Smart Scale" style="width: 100%;">
+    <p class="text-sm">Smart Scale – Wi-Fi enabled load cell module</p>
+  </div>
+</div>
+
+<h4>Edge Hardware (Raspberry Pi + Control Board)</h4>
+
+<div class="text-center">
+  <img src="/images/dd/v3-cr.JPG" alt="Control Board Diagram" class="mx-auto" style="width: 100%;  max-width: 450px;">
+</div>
+
+<ul>
+  <li><strong>Control Board (ESP32-based):</strong>
+    <ul>
+      <li>Controls the stepper motor via STEP/DIR/EN</li>
+      <li>Planned upgrade: multi-load cell interface to replace Smart Scale</li>
+      <li>Communicates with Raspberry Pi over UART</li>
+      <li>Industrial-grade interfaces for I/O, buttons, Lidar power, and LED strip as interface for Raspberry</li>
+    </ul>
+  </li>
+
+<li><strong>Raspberry Pi 4:</strong>
+  Acts as the central coordinator and runs a <strong>multiprocessing Python application</strong> that manages all device operations. Its responsibilities include:
+  <ul>
+    <li>Hosting the frontend: Runs the React-based UI in fullscreen (kiosk mode) for operator interaction.</li>
+    <li>Serving local APIs: A Flask application handles backend API calls made by the frontend.</li>
+    <li>Flow management: Controls the overall scan sequence and performs fault/error handling to maintain device reliability.</li>
+    <li>Point cloud generation: Collects motor feedback and Lidar data to create a CSV file representing the item’s top-view scan.</li>
+    <li>Light and camera control: Manages the RGB LED strips and captures images of the item, especially useful for detecting edge cases like transparent or thin packages.</li>
+    <li>API integration: Sends the CSV and image files to the backend server, receives the dimension and weight results, and updates the UI with feedback.</li>
+  </ul>
+</li>
+
+
+
+</ul>
+
+<div class="text-center" style="display: flex; justify-content: center; flex-wrap: wrap;">
+  <div style="width: 55%; margin: 1%;">
+    <img src="/images/dd/v3-cl.png" alt="point-cloud sample" style="width: 100%;">
+    <p class="text-sm">sample point-cloud for dimension detection</p>
+  </div>
+  <div style="width: 35%; margin: 1%;">
+    <img src="/images/dd/v3-pic.JPG" alt="photo-sample" style="width: 100%;">
+    <p class="text-sm">sample photo for dimension detection</p>
+  </div>
+</div>
+
+<h4>Robotic Server Backend</h4>
+<p>
+  The robotic server hosts four main services, supported by an infrastructure layer that ensures reliability, scalability, and observability.
+</p>
+
+<ol>
+  <li><strong>Django Backend:</strong> Core orchestration layer providing REST APIs for both the Smart Scale and Dimension Detection devices. Manages scan lifecycles, stores results, and integrates with the WMS.</li>
+  
+  <li><strong>Celery Workers:</strong> Execute background jobs, including:
+    <ul>
+      <li>Controlling AI services</li>
+      <li>Processing point cloud files and images</li>
+      <li>Managing MQTT communication through RabbitMQ</li>
+    </ul>
+  </li>
+
+  <li><strong>AI Services:</strong> Dedicated microservices for:
+    <ul>
+      <li>
+        <strong>Dimension calculation from Lidar point clouds:</strong> 
+        Uses the <a href="http://www.open3d.org" target="_blank">Open3D</a> library 
+        <em>(Zhou et al., 2018)</em> to process point clouds into precise object dimensions.
+        This includes fitting a bounding box to scanned points, calculating length, width, and height in real-world units, and handling noise removal.
+      </li>
+      <li>
+        <strong>Low-height item detection using image analysis:</strong>
+          <li>Apply extrinsic calibration to geometrically correct images (top-down undistorted perspective).</li>
+          <li>Remove the background using the <code>rembg</code> model and thresholding to isolate the object’s pixels.</li>
+          <li>Detect the oriented bounding box in pixel space, then convert to real-world units using calibration scale factors.</li>
+      </li>
+    </ul>
+  </li>
+
+
+  <li><strong>React Web Panel:</strong> Operator and admin dashboard for:
+    <ul>
+      <li>Configuring Smart Scale calibration coefficients</li>
+      <li>Adjusting motor speed and calibration for Dimension Detection</li>
+      <li>Managing device parameters remotely</li>
+
+      <div class="text-center" style="display: flex; justify-content: center; flex-wrap: wrap;">
+        <div style="width: 55%; margin: 1%;">
+          <img src="/images/dd/react-server.JPG" alt="point-cloud sample" style="width: 100%;">
+          <img src="/images/dd/react-server-2.JPG" alt="photo-sample" style="width: 100%;">
+        </div>
+      </div>
+    </ul>
+  </li>
+</ol>
+
+<h5>Operational & Monitoring Tools</h5>
+<ul>
+  <li><strong>Grafana Dashboard:</strong> Monitors device health, data flow, and warehouse KPIs to ensure operational integrity.</li>
+</ul>
+
+<h5>System Infrastructure</h5>
+<ul>
+  <li><strong>RabbitMQ:</strong> Message broker for MQTT and Celery task queues</li>
+  <li><strong>MySQL:</strong> Primary relational database for storing scan data and configurations</li>
+  <li><strong>Nginx:</strong> Reverse proxy and static content delivery</li>
+  <li><strong>MinIO:</strong> Object storage for point cloud CSVs and images</li>
+</ul>
+
+
+
+<h3>Demo Video</h3>
+<div class="text-center">
+  <video controls width="640" height="360">
+    <source src="/images/dd/demo.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <p class="text-sm">📽 Demo of real-time scanning using the v3.1 device</p>
+</div>
+
+
+<h3>Performance Highlights</h3>
+<p class="mt-4 text-gray-700">
+  The system leverages a hybrid sensing approach combining structured point cloud generation and AI-powered vision algorithms.
+  During each scan, the Lidar synchronizes with motor feedback to build a 2.5D point cloud, which is used to estimate object boundaries
+  and compute dimensions. For items that are thin, transparent, or otherwise difficult to detect via Lidar alone, the onboard
+  high-resolution camera captures images that are processed by a server-side AI model trained on edge-case scenarios.
+  This dual-layer algorithm enables accurate detection across a wide range of item types — from rigid cartons to irregular or low-contrast surfaces.
+</p>
+
+
+<div class="blog-stats-box">
+  <div class="grid md:grid-cols-3 gap-4 text-center">
+
+    <div>
+      <div class="text-2xl font-bold text-blue-700">5–11 sec</div>
+      <div class="text-sm text-gray-600">Scan Time (Dimension + Weight)</div>
+    </div>
+
+    <div>
+      <div class="text-2xl font-bold text-green-700">0.98–0.99%</div>
+      <div class="text-sm text-gray-600">Dimensional Accuracy</div>
+    </div>
+
+    <div>
+      <div class="text-2xl font-bold text-indigo-700">60×60×35 cm</div>
+      <div class="text-sm text-gray-600">Max Item Dimensions</div>
+    </div>
+
+    <div>
+      <div class="text-2xl font-bold text-purple-700">0.01–40 kg</div>
+      <div class="text-sm text-gray-600">Weight Measurement Range</div>
+    </div>
+
+    <div>
+      <div class="text-2xl font-bold text-yellow-600">Plug & Play</div>
+      <div class="text-sm text-gray-600">Ready-to-Use in Seconds</div>
+    </div>
+
+    <div>
+      <div class="text-2xl font-bold text-gray-800">135×88×181 cm</div>
+      <div class="text-sm text-gray-600">Device Footprint</div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+<h3>Conclusion</h3>
+<p>
+  Designed, developed, and delivered by Hossein Gholami, this project is a showcase of end-to-end automation —
+  combining embedded hardware, AI vision, and scalable software architecture. The system reduces human error,
+  accelerates packaging, and lays a foundation for smart fulfillment processes.
+</p>
+
+</body>
+</html>
