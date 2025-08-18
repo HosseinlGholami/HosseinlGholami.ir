@@ -8,12 +8,20 @@ export const blogPosts = [
     contentFile: 'dimension.html',
   },
   {
+    slug: 'put-to-light-v2',
+    title: 'Put-to-Light V2',
+    image: '/images/p2l/p2lv1.jpg',
+    description: 'A Deep Dive into the Put-to-Light Warehouse System: Architecture, Components, and Deployment at Scale',
+    date: '2024-06-29',
+    contentFile: 'put-to-light-v1.html',
+  },
+  {
     slug: 'put-to-light-v1',
     title: 'Put-to-Light V1',
     image: '/images/p2l/p2lv1.jpg',
     description: 'A Deep Dive into the Put-to-Light Warehouse System: Architecture, Components, and Deployment at Scale',
     date: '2024-06-29',
-    contentFile: 'put-to-light.html',
+    contentFile: 'put-to-light-v1.html',
   },
   {
     slug: 'smart-scale-v1',
@@ -23,12 +31,28 @@ export const blogPosts = [
     date: '2025-07-19',
     contentFile: 'smart-scale.html',
   },
-    {
-    slug: 'mountain-trip',
-    title: 'My Trip to the Mountains',
-    image: '/images/mountains.jpg',
-    description: 'A wonderful journey through the mountains, capturing breathtaking views and peaceful moments.',
-    date: '2024-05-01',
-    contentFile: 'mountain-trip.html',
+  {
+    slug: 'babt-vehicle-tracker',
+    title: 'A Deep Dive into the Multifunctional Vehicle Tracker Project at BABT',
+    image: '/images/babt-vehicle-tracker.jpg',
+    description: 'Building a cost‑effective GSM‑GNSS vehicle tracker on MediaTek MT2503 with sensor fusion, overcoming sparse docs, and integrating accelerometer/gyroscope for driver behavior analytics.',
+    date: '2025-08-09',
+    contentFile: 'car-tracker.html',
   },
+  {
+    slug: 'master-thesis',
+    title: 'Cloud-Based Driver Behavior Profiling System',
+    image: '/images/driver-behavior-profiling.jpg',
+    description: 'A real-time driver behavior analysis platform leveraging IoT devices, decision tree models, and dynamic time warping (DTW) for trip grading and insurance rate optimization.',
+    date: '2021-06-01',
+    contentFile: 'master-thesis.html',
+  },
+  {
+    slug: 'bachlor-thesis-cloud-switch',
+    title: 'Smart Plug (Bachelor Thesis)',
+    image: '/images/thesis/cloud-switch-hero.jpg',
+    description: 'ESP32-based dual 10A smart socket measuring power, temperature, and humidity via MQTT; built as my B.S. thesis at K. N. Toosi University.',
+    date: '2018-06-01',
+    contentFile: 'bachlor-thesis.html',
+  }
 ]; 

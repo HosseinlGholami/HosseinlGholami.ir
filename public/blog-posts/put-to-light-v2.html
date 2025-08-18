@@ -1,0 +1,220 @@
+<div class="blog-content">
+  <h2>Put-to-Light-v1: Simplifying the Most Repetitive Task in the Warehouse</h2>
+  <p>
+    In high-volume fulfillment environments like Digikala, consistency and speed are essential — 
+    especially for the repetitive but critical task of placing items into the correct pigeonboxes. 
+    To reduce human error and cognitive load, our Automation & Robotics team developed a custom 
+    Put-to-Light (P2L) system designed to guide warehouse operators with visual cues and simplified confirmation steps.
+  </p>
+
+  <h3>How It Works</h3>
+  <p>
+    In each pigeon (a sorting zone), 180 pigeonboxes receive items from totes arriving via conveyor. 
+    Operators use handheld scanners to scan each item and receive the corresponding pigeonbox number. 
+    In version 1 of our P2L system, instead of manually locating and scanning the pigeonbox label, 
+    operators can follow a visual light signal on the destination box and confirm the action by 
+    pressing a color-coded button. For fallback or compatibility, the system also supports the 
+    traditional method — scanning the pigeonbox barcode to complete the sorting step.
+  </p>
+
+
+  <h3>System Architecture</h3>
+  <p>
+    The Put-to-Light v1 system was engineered with modularity, expandability, and reliability at its core. It is composed of distributed embedded devices, centralized control logic, and flexible communication protocols. The architecture supports scale-up across pigeon zones and ensures robust operation even in noisy industrial environments.
+  </p>
+  
+  <div class="image-container">
+    <img src="/images/p2l/2.png" alt="Put-to-Light Physical Topology"  style="width: 90%;">
+    <p><strong>Figure 1:</strong> Physical layout of devices in one pigeon — including hubs, switches, and client devices.</p>
+  </div>
+  
+  <p>
+    Each <strong>pigeon</strong> (our modular sorting unit) is equipped with up to <strong>six hubs</strong>, 
+    providing a scalable foundation for high-volume sortation. 
+    Every hub is connected to <strong>six switches</strong>, and each switch supports 
+    up to <strong>30 P2L client devices</strong>. 
+    This configuration results in a standard deployment of <strong>180 pigeonboxes per pigeon</strong>, 
+    with the flexibility to expand as operational demands grow.
+  </p>
+  
+  <p>
+    Communication throughout the system is designed for both stability and security. 
+    The <strong>server communicates with the hubs</strong> using the <strong>MQTT protocol</strong> 
+    (managed by <strong>RabbitMQ</strong>). 
+    From the hub to the client devices, communication is handled over the <strong>CAN Bus protocol</strong>, 
+    which offers reliable, low-latency performance even in industrial environments. 
+    In parallel, the server integrates with <strong>Digikala’s core system, Supernova</strong>, 
+    using a suite of <strong>RESTful HTTPS APIs</strong> to manage authentication, barcode inquiries, 
+    and task acknowledgments.
+  </p>
+
+  <h3>Hardware Components</h3>
+
+  <h3>1 – P2L Nodes</h3>
+  <p>
+    Each pigeonbox is equipped with a compact, custom-designed <strong>P2L node</strong> that acts as the primary user interface for the sorting operator. 
+    These nodes are built for simplicity, clarity, and reliability under continuous warehouse operation.
+  </p>
+  
+  <ul style="font-size: 0.8em;">
+    <li><strong>5 Push-Button LEDs:</strong> Color-coded buttons allow up to five operators to work simultaneously on a single pigeon.</li>
+    <li><strong>AVR Microcontroller:</strong> The node is controlled by an <code>ATMega16</code> chip, chosen for its cost-efficiency and sufficient IO capability.</li>
+    <li><strong>Display:</strong> A 7-segment display provides basic system information such as pigeonbox ID or error codes.</li>
+    <li><strong>Communication:</strong> CAN Bus protocol ensures stable and real-time message transmission in electrically noisy environments.</li>
+    <li><strong>Casing:</strong> The enclosure is built from matte black ST37 sheet metal, designed with a curved form for durability and ergonomic usability.</li>
+  </ul>
+  
+  <div class="image-container">
+    <img src="/images/p2l/0.png" alt="Put-to-Light Node Device">
+    <p><strong>Figure:</strong> Put-to-Light v1 node mounted on a pigeonbox.</p>
+  </div>
+  
+  <h3>2 – P2L Hubs</h3>
+  <p>
+    The <strong>P2L hub</strong> acts as the bridge between the cloud server and the client devices inside each pigeon. 
+    It handles protocol translation, OTA updates, and distributes commands received over the network to the correct downstream nodes.
+  </p>
+  
+  <ul style="font-size: 0.8em;">
+    <li><strong>ESP32 Microcontroller:</strong> The hub is powered by an ESP32 module, chosen for its dual-core architecture, built-in Wi-Fi, TLS 1.2 support, and flexible peripheral support.</li>
+    <li><strong>CAN Transceiver:</strong> A <code>MCP2551</code> chip connects the ESP32 to the CAN Bus, enabling communication with switches and P2L clients.</li>
+    <li><strong>Power Regulation:</strong> A 5V input is stepped down to 3.3V using an <code>AMS1117</code> regulator for ESP32 logic.</li>
+    <li><strong>Enclosure:</strong> The hub is housed in a 3D-printed PLA body with insert nuts for easy mounting and servicing.</li>
+    <li><strong>OTA Support:</strong> Firmware updates can be applied both to the ESP32 and to the client devices over CAN Bus using a custom bootloader.</li>
+  </ul>
+  
+  <div class="image-container">
+    <img src="/images/p2l/4.png" alt="Put-to-Light Hub Device">
+    <p><strong>Figure:</strong> ESP32-based P2L hub managing a group of client devices inside one pigeon.</p>
+  </div>
+  
+  <h3>Software Components</h3>
+
+  <p>
+    The Put-to-Light software architecture bridges physical warehouse operations with digital orchestration. 
+    It handles everything from barcode scanning to light activation while offering real-time visibility and 
+    high system reliability.
+  </p>
+  
+  <div class="image-container">
+    <img src="/images/p2l/1.png" alt="Put-to-Light Software Architecture" style="width: 70%; max-width: 600px;" class="mx-auto">
+    <p class="text-center text-sm text-gray-600"><strong>Figure 2:</strong> End-to-end software data flow from handheld to cloud to P2L clients.</p>
+  </div>
+  
+  <h4>System Architecture Layers</h4>
+  <p>The system is built in modular layers to isolate responsibilities and improve maintainability:</p>
+  <ol>
+    <li><strong>Cloud Server:</strong> Developed in Django (Python), it connects with Digikala’s Supernova platform via RESTful APIs to manage login, barcode lookup, and task acknowledgment.</li>
+    <li><strong>MQTT Messaging Layer:</strong> Powered by RabbitMQ, this layer handles real-time message exchange between server and ESP32-based hubs.</li>
+    <li><strong>Hub (ESP32):</strong> Interprets server commands and communicates with client devices via CAN Bus.</li>
+    <li><strong>Client Devices (AVR Nodes):</strong> Light up the relevant pigeonbox and wait for button press acknowledgment from the operator.</li>
+  </ol>
+  
+  <div class="image-container mt-6">
+    <img src="/images/p2l/5.png" alt="Put-to-Light Backend Services" style="width: 70%; max-width: 600px;" class="mx-auto">
+    <p class="text-center text-sm text-gray-600"><strong>Figure 3:</strong> Backend service stack: MySQL, Redis, RabbitMQ, ELK for observability.</p>
+  </div>
+  
+  <h4>Backend Service Components</h4>
+  <p>
+    These backend tools work together to ensure real-time performance, reliability, and operational visibility:
+  </p>
+  <ul style="font-size: 0.95em;">
+    <li><strong>Django Server:</strong> Orchestrates system logic and API handling.</li>
+    <li><strong>RabbitMQ:</strong> Robust MQTT broker for server–hub communication.</li>
+    <li><strong>Redis:</strong> High-speed cache for user sessions and active tasks.</li>
+    <li><strong>MySQL:</strong> Structured storage for inventory data, pigeonbox assignments, and history logs.</li>
+    <li><strong>ELK Stack:</strong> Elasticsearch and Kibana used for log aggregation and visualization.</li>
+  </ul>
+  
+  <hr class="my-8">
+  
+  <h3>Frontend Application</h3>
+  
+  <p>
+    The system includes a lightweight web application built with <strong>React.js</strong>, optimized for 
+    warehouse handheld devices. It provides operators with immediate feedback and guidance during sorting.
+  </p>
+  
+  <div class="image-container">
+    <img src="/images/p2l/7.png" alt="Put-to-Light Handheld UI" class="mx-auto">
+    <p class="text-center text-sm text-gray-600">
+      <strong>Figure 4:</strong> Handheld interface with pigeonbox indicator and barcode input field.
+    </p>
+  </div>
+  
+  <h4>UI Highlights</h4>
+  <ul style="font-size: 0.95em;">
+    <li><strong>Pigeonbox Number:</strong> Prominently displayed after barcode scan.</li>
+    <li><strong>Barcode Entry Field:</strong> Allows quick scanning or manual input.</li>
+    <li><strong>Control Buttons:</strong> Simple UI to submit or clear actions quickly.</li>
+    <li><strong>Multilingual Support:</strong> Shows product details in Persian and English.</li>
+  </ul>
+  
+  <p>
+    The handheld UI is designed for clarity in fast-paced environments, reducing cognitive load and helping 
+    new operators become effective quickly.
+  </p>
+  
+  <hr class="my-8">
+  
+  <h3>Monitoring Dashboard (Kibana)</h3>
+  
+  <div class="image-container">
+    <img src="/images/p2l/6.png" alt="Put-to-Light Kibana Monitoring Dashboard" style="width: 90%; max-width: 700px;" class="mx-auto">
+    <p class="text-center text-sm text-gray-600">
+      <strong>Figure 5:</strong> Kibana dashboard for system performance, latency, and usage monitoring.
+    </p>
+  </div>
+  
+  <p>
+    To ensure reliability at scale, we use the <strong>ELK stack</strong> (Elasticsearch, Logstash, Kibana) 
+    for comprehensive observability. Operators and engineers can track system behavior in real time and 
+    respond proactively.
+  </p>
+  
+  <h4>Monitoring Capabilities</h4>
+  <ul style="font-size: 0.95em;">
+    <li><strong>Sorted Items:</strong> Track how many items were sorted and acknowledged.</li>
+    <li><strong>Performance:</strong> Button vs. scan activity, request latency, and throughput.</li>
+    <li><strong>Error Detection:</strong> Visualize API timeouts and response code distributions.</li>
+    <li><strong>Device Analytics:</strong> Monitor OS/browser versions, IP distribution, and device usage trends.</li>
+  </ul>
+  
+  <p>
+    These insights empower the operations team to ensure system health, respond to issues faster, and 
+    continuously optimize the overall workflow.
+  </p>
+  
+
+
+<h3>Measured Results</h3>
+  <p>
+    After deploying the v1 system across one pigeons, we observed measurable improvements in key operational KPIs:
+  </p>
+
+  <div class="blog-stats-box">
+    <h4>Performance Metrics:</h4>
+    <div class="grid md:grid-cols-3 gap-4 text-center">
+      <div>
+        <div class="text-2xl font-bold text-green-600">6.4%</div>
+        <div class="text-sm text-gray-600">Faster Sorting Cycle</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-blue-600">20%</div>
+        <div class="text-sm text-gray-600">Performance Boost for Flex Operators</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-purple-600">777M IRR</div>
+        <div class="text-sm text-gray-600">Estimated Annual Savings</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Conclusion</h3>
+  <p>
+    Put-to-Light v1 shows how targeted engineering can eliminate operational friction in repetitive workflows. 
+    By combining intuitive visual hardware with an OTA-capable, configurable firmware and a robust backend, 
+    we built a system that’s fast, reliable, and operator-friendly — ready for scale.
+  </p>
+</div>
