@@ -4,7 +4,8 @@ export const personalInfo = {
   email: 'hossein.gholami1995@gmail.com',
   github: 'https://github.com/HosseinlGholami',
   linkedin: 'https://linkedin.com/in/hosseinlgholami',
-  description: 'Embedded systems engineer and full-stack developer with expertise in automation, IoT, and modern web technologies. Passionate about building scalable systems that bridge hardware and software.',
+  description: 'Embedded systems & IoT engineer focused on building connected devices and automation solutions. From warehouse robotics, to consumer IoT products, I design systems that seamlessly bridge hardware and cloud. Although embedded development is my core specialty, I also enjoy building backend APIs and frontend apps when needed -\n making sure my projects work end-to-end.',
+  image: '/images/prof.jpg',
   about: {
     journey: `With over 4 years of experience, I have worked across embedded development, 
     backend services, and full-stack applications. My journey began in electronics 

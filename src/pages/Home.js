@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Code, Download } from 'lucide-react';
+import { ArrowRight, Download } from 'lucide-react';
 import { personalInfo } from '../data/personalInfo';
 import { skills } from '../data/skills';
 
@@ -13,7 +13,8 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
-                Hi, I'm{' '}
+                Hi,<br/>
+                I'm{' '}
                 <span className="text-primary-600">{personalInfo.name}</span>
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
@@ -36,14 +37,21 @@ const Home = () => {
                 </Link> */}
               </div>
             </div>
-            <div className="flex justify-center lg:justify-end">
-              <div className="relative">
-                <div className="w-80 h-80 bg-primary-600 rounded-full opacity-10 absolute -top-4 -right-4"></div>
-                <div className="w-80 h-80 bg-gradient-to-br from-primary-400 to-blue-500 rounded-full flex items-center justify-center relative">
-                  <Code size={120} className="text-white" />
+              <div className="flex justify-center lg:justify-end">
+                <div className="relative">
+                  {/* Background faded circle */}
+                  <div className="w-80 h-80 bg-primary-600 rounded-full opacity-10 absolute -top-4 -right-4"></div>
+
+                  {/* Gradient circle with image inside */}
+                  <div className="w-80 h-80 bg-gradient-to-br from-primary-400 to-blue-500 rounded-full flex items-center justify-center relative overflow-hidden">
+                    <img 
+                      src={personalInfo.image} 
+                      alt="Profile"
+                      className="w-full h-full object-cover rounded-full" 
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </section>
