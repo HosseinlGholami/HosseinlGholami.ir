@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>A Deep Dive into the Automatic Dimension Detection System</title>
+  <title>A Deep Dive into the Cloud-Connected Smart Switch</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
     h3, h4 { color: #333366; }
@@ -11,6 +10,7 @@
     .text-center { text-align: center; }
     .text-sm { font-size: 0.9em; color: gray; }
     .mx-auto { margin-left: auto; margin-right: auto; display: block; }
+    .media { margin: 20px 0; }
   </style>
 </head>
 <body>
@@ -19,16 +19,16 @@
   The Cloud-Connected Smart Switch was designed to combine remote control, power measurement, and environmental sensing into a single IoT device. 
   Featuring dual 10A AC outputs, it enables operators to control connected appliances through an MQTT dashboard while continuously reporting 
   real-time power consumption, temperature, and humidity. This integration enhances operational convenience, improves monitoring capabilities, 
-  and opens the door to automation scenarios for both industrial and home applications.
+  and opens the door to automation scenarios for home applications.
 </p>
 
 <h3>System Architecture</h3>
 <p>
   The system architecture is built around the ESP32 microcontroller, which collects sensor data and manages relay control. 
-  The device connects to a CloudMQTT broker over Wi-Fi, enabling bi-directional communication between the switch and a mobile dashboard application. 
+  The device connects to a <a href="https://www.cloudmqtt.com/">CloudMQTT</a> broker over Wi-Fi, enabling bi-directional communication between the switch and a mobile dashboard application. 
   All sensor readings and control commands are transmitted via the MQTT protocol, ensuring low-latency performance.
 </p>
-<img src="/images/cloud-switch-architecture.png" alt="Architecture Diagram" class="mx-auto" style="width: 80%; max-width: 700px;">
+<img src="/images/bs/com-arch.png" alt="Architecture Diagram" class="mx-auto" style="width: 80%; max-width: 700px;">
 
 <h3>Hardware Components</h3>
 <h4>1 – Main Controller</h4>
@@ -61,38 +61,49 @@
   <li>Onboard regulation to 3.3V for ESP32</li>
 </ul>
 
+<h3>Prototypes</h3>
+<h4>Prototype #1 – Breadboard/Perfboard Version</h4>
+<p>
+  The first prototype was implemented using a perfboard. This stage allowed rapid testing of the ESP32, ACS712, and DHT22 integration, 
+  along with debugging MQTT communication.
+</p>
+<div class="media text-center">
+  <img src="/images/bs/d1-1.png" alt="Perfboard Prototype" class="mx-auto" style="width: 70%; max-width: 500px;">
+  <img src="/images/bs/d1-2.png" alt="Perfboard Prototype" class="mx-auto" style="width: 70%; max-width: 500px;">
+  <p class="text-sm">Figure 1: Initial prototype on perfboard.</p>
+</div>
+<div class="media text-center">
+  <video src="/images/bs/d1-3.mp4" controls class="mx-auto" style="width: 70%; max-width: 500px;"></video>
+  <p class="text-sm">Video: Demo of the perfboard prototype in action.</p>
+</div>
+
+<h4>Prototype #2 – Final PCB Version</h4>
+<p>
+  After validation, the circuit was migrated to a custom PCB design for stability, safety, and compact form factor. 
+  The PCB version provided proper isolation for relays, improved power routing, and more reliable sensor readings.
+</p>
+<div class="media text-center">
+  <img src="/images/bs/d2-1.png" alt="PCB Prototype" class="mx-auto" style="width: 70%; max-width: 500px;">
+  <img src="/images/bs/d2-2.png" alt="PCB Prototype" class="mx-auto" style="width: 70%; max-width: 500px;">
+  <img src="/images/bs/sch.JPG" alt="PCB Prototype" class="mx-auto" style="width: 70%; max-width: 500px;">
+
+  <p class="text-sm">Figure 2: Final PCB-based smart switch design.</p>
+</div>
+<div class="media text-center">
+  <video src="/images/bs/d2-3.mp4" controls class="mx-auto" style="width: 70%; max-width: 500px;"></video>
+  <p class="text-sm">Video: Demo of the final PCB version in use.</p>
+</div>
+
 <h3>Software Components</h3>
 <p>
   The embedded firmware, developed for the ESP32, handles sensor reading, relay control, and MQTT communication. 
   A CloudMQTT instance acts as the broker, while the MQTT Dash Android app serves as the operator interface.
 </p>
 <ul>
-  <li><strong>Firmware:</strong> Arduino-ESP32 framework</li>
+  <li><strong>Firmware:</strong> ESP-IDF framework</li>
   <li><strong>Protocol:</strong> MQTT (over TCP/IP)</li>
   <li><strong>Broker:</strong> CloudMQTT</li>
   <li><strong>Mobile App:</strong> MQTT Dash</li>
-</ul>
-
-<h3>Frontend Application</h3>
-<p>
-  The MQTT Dash app displays real-time power, temperature, and humidity readings, 
-  and provides on/off controls for each relay channel. 
-  Operators can adjust settings, monitor energy usage, and respond to environmental changes instantly.
-</p>
-<img src="/images/cloud-switch-ui.png" alt="Mobile UI" class="mx-auto" style="width: 60%; max-width: 400px;">
-
-<h3>System Monitoring</h3>
-<ul>
-  <li>Real-time current, voltage, and power readings</li>
-  <li>Temperature and humidity logging</li>
-  <li>Status indicators for relay state and connectivity</li>
-</ul>
-
-<h3>Performance Highlights</h3>
-<ul>
-  <li>Relay switching latency &lt; 200 ms over MQTT</li>
-  <li>Power measurement accuracy within ±3%</li>
-  <li>Stable Wi-Fi and MQTT uptime over continuous 72-hour testing</li>
 </ul>
 
 <h3>Conclusion</h3>
@@ -100,6 +111,10 @@
   This project successfully demonstrates how an IoT-enabled smart switch can integrate multiple sensing and control functions 
   while maintaining reliable cloud connectivity. Future enhancements may include energy usage analytics, integration with home automation 
   platforms such as Home Assistant, and OTA firmware updates for feature expansion.
+</p>
+<p>
+  For more details, you can access the full Persian thesis document here: 
+  <a href="/docs/bachelor-thesis.pdf" target="_blank"><h3>Download Thesis (PDF)</h3></a>.
 </p>
 
 </body>

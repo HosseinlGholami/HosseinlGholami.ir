@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>A Deep Dive into the Automatic Dimension Detection System</title>
+  <title>A Deep Dive into Cloud‑Based Driver Behavior Profiling</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
     h3, h4 { color: #333366; }
@@ -14,67 +13,74 @@
   </style>
 </head>
 <body>
+
 <h3>System Overview</h3>
 <p>
-  This project focuses on the collection, transmission, and analysis of driving data to profile driver behavior on a cloud platform.
-  Data is collected using accelerometer and gyroscope sensors embedded in microcontroller-based devices installed in vehicles.
-  The system detects harsh driving events such as abrupt braking and acceleration in real time, sending processed data to a cloud server for further analysis and trip grading.
+  This project turns raw motion signals from vehicle‑mounted sensors into actionable safety insights.
+  Using accelerometer and gyroscope data, the edge device segments streams into sliding windows and detects harsh
+  events such as abrupt braking, aggressive acceleration, sharp turns, and lane changes. Detected events and
+  metadata are published to the cloud in real time for storage, analytics, and trip grading.
 </p>
 
 <h3>System Architecture</h3>
 <p>
-  The architecture consists of in-vehicle IoT devices, a cloud-based processing backend, and a driver grading module.
-  Vehicles transmit data via MQTT to the cloud, where RabbitMQ handles message brokering and Redis provides temporary caching.
-  The system runs in Docker containers for seamless deployment and scalability.
+  The pipeline has three layers: on‑vehicle sensing and lightweight detection, a cloud ingestion/processing tier,
+  and a scoring &amp; dashboard layer. Vehicles publish over MQTT; RabbitMQ handles message brokering (MQTT plugin)
+  and Redis provides fast in‑memory buffering. Long‑term data lands in PostgreSQL and the system is packaged in
+  Docker for reproducible deployment and horizontal scaling.
 </p>
 <img src="/images/driver-behavior-architecture.png" alt="Driver Behavior Profiling Architecture" class="mx-auto" style="width: 80%; max-width: 700px;">
 
 <h3>Hardware Components</h3>
-<h4>1 – In-Vehicle IoT Device</h4>
+<h4>1 – In‑Vehicle IoT Device</h4>
 <ul>
-  <li>Microcontroller: ARM-based MCU</li>
-  <li>Sensors: 3-axis accelerometer, 3-axis gyroscope</li>
-  <li>Communication: MQTT over cellular/GPRS</li>
+  <li>Microcontroller / Phone: ESP32 or smartphone SoC</li>
+  <li>Sensors: 3‑axis accelerometer &amp; 3‑axis gyroscope</li>
+  <li>Communication: MQTT over Wi‑Fi/BLE or cellular</li>
 </ul>
 
-<h4>2 – Data Transmission</h4>
+<h4>2 – Data Uplink</h4>
 <ul>
-  <li>Protocol: MQTT</li>
-  <li>Message Broker: RabbitMQ</li>
-  <li>Temporary Storage: Redis</li>
+  <li>Protocol: MQTT topics per vehicle/trip</li>
+  <li>Message Broker: RabbitMQ (MQTT plugin)</li>
+  <li>Temporary Storage: Redis streams/cache</li>
 </ul>
 
 <h3>Software Components</h3>
 <ul>
-  <li><strong>Backend:</strong> Cloud-hosted server application for data ingestion and analysis</li>
-  <li><strong>Algorithm:</strong> Sliding window analysis, decision tree models, and DTW (Dynamic Time Warping) for event detection</li>
-  <li><strong>Database:</strong> PostgreSQL for long-term storage</li>
+  <li><strong>Algorithm:</strong> Sliding‑window analysis with FastDTW (template matching) + pruned decision tree (ID3) for event classification</li>
+  <li><strong>Backend Workers:</strong> Python services for ingestion, labeling, aggregation, and scoring</li>
+  <li><strong>Database:</strong> PostgreSQL for durable, queryable history</li>
+  <li><strong>Orchestration:</strong> Docker &amp; Docker Compose for simple deployment</li>
 </ul>
 
 <h3>Frontend Application</h3>
 <p>
-  A web-based dashboard for insurance companies and fleet managers to view trip scores, harsh event logs, and historical driver behavior trends.
+  A web dashboard for fleet managers and insurers shows live event counts, trip timelines, and driver scorecards.
+  Operators can drill down into a trip to review the sequence and severity of detected events.
 </p>
 <img src="/images/driver-behavior-ui.png" alt="Driver Behavior Dashboard" class="mx-auto" style="width: 60%; max-width: 400px;">
 
 <h3>System Monitoring</h3>
 <ul>
-  <li>Real-time MQTT message throughput</li>
-  <li>Server resource monitoring</li>
-  <li>Trip grading accuracy statistics</li>
+  <li>Real‑time MQTT throughput and broker queue depth</li>
+  <li>End‑to‑end latency (edge window → labeled event → persisted record)</li>
+  <li>Worker health, error rates, and device online status</li>
 </ul>
 
 <h3>Performance Highlights</h3>
 <ul>
-  <li>Event detection latency: &lt;200 ms</li>
-  <li>Accuracy of harsh event detection: 94%</li>
-  <li>System uptime: 99.8%</li>
+  <li>Macro F1 on test set: <strong>≈90%</strong> with a 186‑sample window and pruned decision tree (depth ≈12)</li>
+  <li>On‑device event detection: real‑time friendly via sliding windows + FastDTW comparison</li>
+  <li>Cloud ingestion stability: sustained processing under bursty uploads with Redis buffering</li>
 </ul>
 
 <h3>Conclusion</h3>
 <p>
-  This project successfully delivered a robust driver behavior profiling platform that enables insurers to adjust premiums based on driving habits, promoting safer roads.
-  Future improvements include incorporating machine learning models for predictive accident risk analysis and integrating GPS route optimization.
+  By combining efficient classical signal‑processing (FastDTW) with a lightweight decision tree and a lean,
+  containerized backend, the system delivers accurate, real‑time driver behavior profiling on modest hardware.
+  Next steps include exploring temporal deep networks for richer behaviors, broader calibration across vehicles/mounts,
+  and extending scoring to insurance pricing and coaching feedback loops.
 </p>
 
 </body>
