@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>A Deep Dive into the Multifunctional Vehicle Tracker Project at BABT</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.7; color: #1f2937; }
+    h1, h2, h3, h4 { color: #111827; margin-top: 1.6em; }
+    h1 { font-size: 2rem; }
+    h3 { font-size: 1.4rem; }
+    h4 { font-size: 1.1rem; color: #374151; }
+    p { margin: 0.6em 0; }
+    ul { margin: 0.5em 0 1.2em 1.2em; }
+    li { margin: 0.3em 0; }
+    .text-center { text-align: center; }
+    .text-sm { font-size: 0.9em; color: #6b7280; }
+    .mx-auto { margin-left: auto; margin-right: auto; display: block; }
+    img { border-radius: 12px; }
+    .note { background:#f9fafb; border:1px solid #e5e7eb; padding:12px 14px; border-radius:8px; margin: 16px 0;}
+  </style>
+</head>
+<body>
+
+<h1>A Deep Dive into the Multifunctional Vehicle Tracker Project at BABT</h1>
+<p class="text-sm">
+  Role: <strong>Embedded Software Engineer</strong> (2021–2022) — Embedded R&amp;D, chip/module selection, and firmware integration
+</p>
+
+<h3>Introduction</h3>
+<p>
+  Between 2021 and 2022, I worked at <strong>Basir Andishan Bina Tadbir (BABT)</strong> on the development of a 
+  <strong>Multifunctional Vehicle Tracker</strong>. The device was intended to be a <em>cost-effective yet feature-rich 
+  telematics solution</em>, providing GSM connectivity, GNSS positioning, and motion-based driver behavior monitoring. 
+</p>
+<p>
+  My responsibility was focused on the <strong>embedded side</strong>: researching GSM/GNSS SoCs, benchmarking 
+  commercial modules, and adapting vendor firmware into a working product. This required overcoming 
+  <strong>limited documentation</strong> and a minimal developer community around the chosen platform.
+</p>
+
+<div class="image-container" style="margin: 24px 0;">
+  <img src="/images/basir/board.jpg" alt="BABT Multifunctional Vehicle Tracker" class="mx-auto" style="width: 86%; max-width: 900px;">
+  <p class="text-center text-sm"><strong>Figure 1:</strong> BABT Multifunctional Vehicle Tracker — embedded design centered on MediaTek MT2503.</p>
+</div>
+
+<h3>System Overview</h3>
+<p>
+  At the heart of the tracker is <strong>MediaTek’s MT2503 SoC</strong>, chosen for its integration of GSM and GNSS into 
+  a single compact and low-power chip. The system interfaces with a 3-axis accelerometer and gyroscope to detect 
+  events such as harsh braking or sudden acceleration. The embedded firmware collects GNSS and sensor data, 
+  formats it, and sends it over GSM for telematics processing.
+</p>
+
+<h3>R&amp;D and Chip Selection</h3>
+<p>
+  A key part of my role was <strong>benchmarking and evaluating hardware options</strong> to balance performance, cost, 
+  and available documentation. Several module families were considered:
+</p>
+<ul>
+  <li><strong>Simcom</strong> — SIM868 (with MT2503D), SIM800C32 (with MT6261D)</li>
+  <li><strong>Quectel MC60</strong> — comparable GSM/GNSS modules</li>
+  <li><strong>AiThinker A9</strong> — alternative GSM-only modules</li>
+</ul>
+<div class="image-container" style="margin: 24px 0;">
+  <img src="/images/basir/sim868.JPG" alt="Simcom SIM868 Module" class="mx-auto" style="width: 86%; max-width: 900px;">
+  <p class="text-center text-sm"><strong>Figure 2:</strong> SIM868 module with embedded MT2503D SoC.</p>
+</div>
+
+<p>
+  After evaluation, <strong>MT2503D</strong> was selected as the final platform, partly because 
+  <em>Simcom and Quectel themselves embed the same MediaTek cores</em> in their commercial modules, confirming 
+  the SoC’s reliability for production trackers.
+</p>
+
+<h3>Firmware Integration</h3>
+<p>
+  To accelerate development, BABT purchased a <strong>MediaTek firmware package</strong> from 
+  <a href="https://blog.csdn.net/szx940213/article/details/82461351">new-mobie</a>. 
+  My work included adapting and extending this firmware to:
+</p>
+<ul>
+  <li>Orchestrate the base code, task management, and finite state machine handling</li>
+  <li>Configure GSM services such as SMS, call, GPRS, USSD, and DTMF</li>
+  <li>Enable GNSS data parsing and packet transmission</li>
+  <li>Integrate accelerometer and gyroscope via I²C drivers</li>
+  <li>Apply a Kalman filter to sensor and GNSS data to increase position accuracy</li>
+  <li>Customize build configurations through Makefiles</li>
+  <li>Optimize for low power consumption in continuous vehicle operation</li>
+</ul>
+
+<h3>Product Features</h3>
+<h4>Hardware Capabilities</h4>
+<ul>
+  <li>Backup battery: <strong>3.7V 450mAh</strong></li>
+  <li>Ability to declare <strong>emergency situations</strong></li>
+  <li>Send information via <strong>SMS</strong></li>
+  <li>GNSS location accuracy &lt; <strong>10 meters</strong></li>
+  <li><strong>Power cut-off relay</strong> for engine immobilization</li>
+  <li><strong>Microphone</strong> for listening</li>
+  <li>Operating voltage: <strong>12–36V</strong></li>
+  <li><strong>Low battery warning</strong></li>
+  <li><strong>Speaker connectivity</strong></li>
+  <li><strong>SIM card slot</strong></li>
+</ul>
+
+<h4>Software Capabilities</h4>
+<ul>
+  <li>Set <strong>speed warnings</strong></li>
+  <li>Define <strong>geo-fences</strong> and trigger alarms</li>
+  <li>Trigger an alarm when the car is started</li>
+  <li>Ability to <strong>turn off the car remotely</strong></li>
+  <li>Recharge GPS SIM card via the app</li>
+</ul>
+
+<h3>Key Results</h3>
+<ul>
+  <li>Validated <strong>MT2503 SoC</strong> as a stable and cost-efficient platform for vehicle tracking</li>
+  <li>Delivered a working embedded firmware base for commercial tracker products</li>
+  <li>Integrated motion sensors for <em>driver behavior analytics</em></li>
+  <li>Defined a clear product feature set combining hardware and software strengths</li>
+</ul>
+
+<h3>Conclusion</h3>
+<p>
+  The BABT Vehicle Tracker project highlighted the challenges of working with <strong>under-documented SoCs</strong>, 
+  but also the potential for <strong>cost-effective telematics solutions</strong>. Through focused R&amp;D, 
+  chip benchmarking, firmware integration, and careful feature definition, we delivered a product that combined GSM, GNSS, 
+  motion sensing, and a rich set of hardware/software capabilities in a robust embedded package.
+</p>
+
+<div class="note">
+  <p><strong>References:</strong></p>
+  <ul>
+    <li><a href="https://babt.ir/%d9%86%d8%b1%d9%85-%d8%a7%d9%81%d8%b2%d8%a7%d8%a8-%d8%b1%d8%af%db%8c%d8%a7%d8%a8/" target="_blank">BABT Engineering – Tracker Software</a></li>
+    <li><a href="https://enasb.com/product-category/gps/car-tracker/" target="_blank">Link to purchase the device (Enasb)</a></li>
+  </ul>
+</div>
+
+</body>
+</html>

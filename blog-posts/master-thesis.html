@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>A Deep Dive into Cloud‑Based Driver Behavior Profiling</title>
+  <title>A Deep Dive into Cloud-Based Driver Behavior Profiling</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
     h3, h4 { color: #333366; }
@@ -16,71 +16,136 @@
 
 <h3>System Overview</h3>
 <p>
-  This project turns raw motion signals from vehicle‑mounted sensors into actionable safety insights.
-  Using accelerometer and gyroscope data, the edge device segments streams into sliding windows and detects harsh
-  events such as abrupt braking, aggressive acceleration, sharp turns, and lane changes. Detected events and
-  metadata are published to the cloud in real time for storage, analytics, and trip grading.
+  The thesis addressed the growing need for accurate driver behavior profiling using only motion data collected 
+  from smartphones and low-cost embedded sensors. Traditional insurance models rely on demographic factors 
+  such as age and location, but do not directly reflect how a person actually drives. By detecting harsh 
+  events such as braking, accelerating, and turning, the system aimed to quantify driving style objectively 
+  and propose a framework for usage-based insurance (UBI).
 </p>
-
-<h3>System Architecture</h3>
 <p>
-  The pipeline has three layers: on‑vehicle sensing and lightweight detection, a cloud ingestion/processing tier,
-  and a scoring &amp; dashboard layer. Vehicles publish over MQTT; RabbitMQ handles message brokering (MQTT plugin)
-  and Redis provides fast in‑memory buffering. Long‑term data lands in PostgreSQL and the system is packaged in
-  Docker for reproducible deployment and horizontal scaling.
+  The research was designed as a <strong>software and dataset-driven study</strong>. No custom hardware was built; 
+  instead, the focus was on analyzing sensor datasets, implementing efficient algorithms, and simulating 
+  the full cloud pipeline that such a system would use in practice.
 </p>
-<img src="/images/driver-behavior-architecture.png" alt="Driver Behavior Profiling Architecture" class="mx-auto" style="width: 80%; max-width: 700px;">
 
-<h3>Hardware Components</h3>
-<h4>1 – In‑Vehicle IoT Device</h4>
-<ul>
-  <li>Microcontroller / Phone: ESP32 or smartphone SoC</li>
-  <li>Sensors: 3‑axis accelerometer &amp; 3‑axis gyroscope</li>
-  <li>Communication: MQTT over Wi‑Fi/BLE or cellular</li>
-</ul>
-
-<h4>2 – Data Uplink</h4>
-<ul>
-  <li>Protocol: MQTT topics per vehicle/trip</li>
-  <li>Message Broker: RabbitMQ (MQTT plugin)</li>
-  <li>Temporary Storage: Redis streams/cache</li>
-</ul>
-
-<h3>Software Components</h3>
-<ul>
-  <li><strong>Algorithm:</strong> Sliding‑window analysis with FastDTW (template matching) + pruned decision tree (ID3) for event classification</li>
-  <li><strong>Backend Workers:</strong> Python services for ingestion, labeling, aggregation, and scoring</li>
-  <li><strong>Database:</strong> PostgreSQL for durable, queryable history</li>
-  <li><strong>Orchestration:</strong> Docker &amp; Docker Compose for simple deployment</li>
-</ul>
-
-<h3>Frontend Application</h3>
+<h3>Dataset</h3>
 <p>
-  A web dashboard for fleet managers and insurers shows live event counts, trip timelines, and driver scorecards.
-  Operators can drill down into a trip to review the sequence and severity of detected events.
+  The experiments were based on the dataset published by 
+  <strong>J. Ferreira, Jr., et al. (2017), “Driver behavior profiling: An investigation with different smartphone sensors and machine learning,” PLoS ONE, 12(4)</strong>. 
+  This dataset contains smartphone accelerometer and gyroscope recordings of multiple trips, 
+  annotated with normal and harsh driving events. It provides a challenging real-world benchmark: 
+  sensor signals are noisy, time-warped (events occur with different durations), and influenced by road 
+  conditions and driver idiosyncrasies.
 </p>
-<img src="/images/driver-behavior-ui.png" alt="Driver Behavior Dashboard" class="mx-auto" style="width: 60%; max-width: 400px;">
+<p>
+  Preprocessing involved normalizing the sensor readings, segmenting them into 
+  <strong>sliding windows</strong>, and labeling each segment according to the ground truth. 
+  Three window sizes (126, 186, and 226 samples) were systematically compared. 
+  Results showed that 186-sample windows offered the best trade-off: 
+  smaller windows produced fragmented detections, while larger windows diluted event boundaries 
+  and increased computational cost.
+</p>
 
-<h3>System Monitoring</h3>
+<h3>Event Detection with DTW</h3>
+<p>
+  A key innovation was the use of <strong>Dynamic Time Warping (DTW)</strong> and its fast approximation, FastDTW. 
+  Unlike simple Euclidean distance, DTW can align two sequences that differ in length or speed. 
+  For example, two drivers may brake harshly, but one event lasts 0.8 seconds and the other 1.2 seconds. 
+  DTW computes an optimal alignment path between these time series, making it robust to such distortions. 
+</p>
+<p>
+  For each window, DTW distances to reference event templates were calculated. 
+  These similarity measures served as the main features for classification. 
+  This approach allowed the system to capture the “shape” of events, not just raw thresholds on acceleration.
+</p>
+
+<h3>Classification with Decision Trees</h3>
+<p>
+  The next step was classification. A pruned <strong>ID3 decision tree</strong> was trained on the DTW-derived features. 
+  Several tree depths were explored. Shallow trees underfit, while overly deep trees risked memorizing 
+  noise in the dataset. A depth of around 12 strikes proved to be the sweet spot, achieving a 
+  <strong>macro F1-score of ~90%</strong> on the test set, while training F1 reached ~94%. 
+  Importantly, decision trees provide interpretable rules (“if DTW distance to braking template &lt; threshold → classify as harsh brake”), 
+  making them easier to validate in a safety-critical context than black-box models.
+</p>
+
+<h3>Cloud Architecture (Simulation)</h3>
+<p>
+  While the research framed the system as a cloud-based telematics platform, 
+  the <strong>entire cloud architecture was simulated</strong>. 
+  All feature extraction, DTW comparisons, and decision tree predictions were performed at the edge 
+  (i.e., in the same environment as the dataset). 
+  Events were then “sent” to a simulated backend to test scalability and data handling.
+</p>
+<p>
+  The simulated backend consisted of:
+</p>
 <ul>
-  <li>Real‑time MQTT throughput and broker queue depth</li>
-  <li>End‑to‑end latency (edge window → labeled event → persisted record)</li>
-  <li>Worker health, error rates, and device online status</li>
+  <li><strong>RabbitMQ with MQTT plugin</strong> — representing the message broker that ingests event packets.</li>
+  <li><strong>Redis</strong> — used as a fast in-memory buffer for stream processing.</li>
+  <li><strong>Docker containers</strong> — packaging all components to simulate deployment, scaling, and monitoring.</li>
+</ul>
+<p>
+  Although no live devices were connected, this simulation validated the feasibility of a distributed architecture 
+  and demonstrated how edge event detection could integrate seamlessly with a scalable cloud backend.
+</p>
+
+<h3>Trip Grading and Insurance Use Case</h3>
+<p>
+  A major contribution of the thesis was the <strong>trip grading model</strong>. 
+  Instead of treating events in isolation, the system aggregated detected events over each trip. 
+  Statistical features such as the number of harsh braking events per kilometer, 
+  or the ratio of aggressive turns to total turns, were computed. 
+  Each trip was then assigned a safety grade.
+</p>
+<p>
+  This framework enables applications in <strong>usage-based insurance (UBI)</strong>. 
+  Safer drivers, with fewer harsh events, would receive lower premiums. 
+  Conversely, drivers with riskier patterns would be incentivized to improve. 
+  Beyond insurance, such trip grading could also support fleet operators, 
+  who wish to coach drivers and reduce accidents.
+</p>
+
+<h3>Performance Analysis</h3>
+<p>
+  Extensive experiments were performed to evaluate window size, DTW runtime, and decision tree depth. 
+  Key findings include:
+</p>
+<ul>
+  <li><strong>Window size:</strong> 186 samples yielded the best macro F1 ≈ 90%.</li>
+  <li><strong>DTW runtime:</strong> With FastDTW, detection latency remained &lt; 250 ms per event, suitable for real-time use.</li>
+  <li><strong>Tree depth:</strong> Best balance at depth ~12, avoiding both underfitting and overfitting.</li>
+  <li><strong>Event-level performance:</strong> Harsh braking and sharp turns were classified with the highest precision/recall, 
+      while subtle acceleration patterns were more error-prone.</li>
 </ul>
 
-<h3>Performance Highlights</h3>
+<h3>Repositories</h3>
+<p>
+  The full code for this work is available on GitHub:
+</p>
 <ul>
-  <li>Macro F1 on test set: <strong>≈90%</strong> with a 186‑sample window and pruned decision tree (depth ≈12)</li>
-  <li>On‑device event detection: real‑time friendly via sliding windows + FastDTW comparison</li>
-  <li>Cloud ingestion stability: sustained processing under bursty uploads with Redis buffering</li>
+  <li><a href="https://github.com/HosseinlGholami/Event-Extraction" target="_blank">Event-Extraction</a> — DTW-based event detection and decision tree classification.</li>
+  <li><a href="https://github.com/HosseinlGholami/BehavePart" target="_blank">BehavePart</a> — trip grading, statistical analysis, and insurance risk modeling.</li>
 </ul>
 
 <h3>Conclusion</h3>
 <p>
-  By combining efficient classical signal‑processing (FastDTW) with a lightweight decision tree and a lean,
-  containerized backend, the system delivers accurate, real‑time driver behavior profiling on modest hardware.
-  Next steps include exploring temporal deep networks for richer behaviors, broader calibration across vehicles/mounts,
-  and extending scoring to insurance pricing and coaching feedback loops.
+  This thesis demonstrated that driver behavior profiling can be achieved effectively with only smartphone motion data 
+  and carefully chosen algorithms. By combining DTW for temporal alignment with decision trees for classification, 
+  the system delivered robust, interpretable, and efficient results. 
+</p>
+<p>
+  Although the cloud architecture was simulated, the research provided a proof-of-concept for how 
+  edge-based event detection can integrate with scalable backend systems. 
+  The proposed trip grading model highlights the value of such systems for insurers, 
+  fleet managers, and road safety initiatives. 
+  Future work should explore larger and more diverse datasets, integration of GPS and contextual data, 
+  and the use of deep learning for complex event recognition.
+</p>
+
+<p>
+  For more details, you can access the full Persian thesis document here: 
+  <a href="/images/ms/th.pdf" target="_blank"><h3>Download Thesis (PDF)</h3></a>.
 </p>
 
 </body>
