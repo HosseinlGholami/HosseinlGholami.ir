@@ -2,23 +2,27 @@ import { Globe, Database, Smartphone, Zap } from 'lucide-react';
 
 export const skills = [
   { 
-    name: 'Frontend Development', 
-    icon: Globe, 
-    description: 'React, Vue.js, HTML5, CSS3, JavaScript' 
+    name: 'Embedded & IoT Development', 
+    icon: Smartphone, 
+    description: 'ESP32, STM32, MediaTek, Quectel, AiThinker', 
+    level: 90 
   },
   { 
     name: 'Backend Development', 
     icon: Database, 
-    description: 'Node.js, Python, Java, PHP, SQL' 
+    description: 'Django, FastAPI, Flask, RabbitMQ, Redis, SQL/NoSQL', 
+    level: 80 
   },
   { 
-    name: 'Mobile Development', 
-    icon: Smartphone, 
-    description: 'React Native, Flutter, iOS, Android' 
+    name: 'Frontend Development', 
+    icon: Globe, 
+    description: 'React, HTML5, CSS3, JavaScript', 
+    level: 65 
   },
   { 
     name: 'DevOps & Tools', 
     icon: Zap, 
-    description: 'Docker, AWS, Git, CI/CD, Linux' 
+    description: 'Docker, Git, Linux, Jira, CI/CD', 
+    level: 70 
   }
-]; 
+];

@@ -58,17 +58,7 @@ const Home = () => {
 
       {/* About Section */}
       <section className="section-padding bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              About Me
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              I'm a dedicated developer with a passion for creating meaningful applications 
-              that solve real-world problems.
-            </p>
-          </div>
-          
+        <div className="max-w-7xl mx-auto">          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h3 className="text-2xl font-semibold text-gray-900">
@@ -114,36 +104,63 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Skills Section */}
-      <section className="section-padding bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Skills & Expertise
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              I specialize in modern web technologies and have experience across 
-              the entire development stack.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {skills.map((skill, index) => (
-              <div key={index} className="card text-center group hover:scale-105 transition-transform duration-300">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary-200 transition-colors duration-200">
-                  <skill.icon size={32} className="text-primary-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {skill.name}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  {skill.description}
-                </p>
+{/* Skills Section */}
+<section className="section-padding bg-gray-50">
+  <div className="max-w-7xl mx-auto">
+    <div className="text-center mb-16">
+      <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Skills & Expertise
+      </h2>
+      <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        I specialize in IoT and embedded systems, building solutions that seamlessly 
+        connect devices to the cloud. My experience spans firmware, backend services, 
+        and modern frontend technologies.
+      </p>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {skills.map((skill, index) => (
+        <div
+          key={index}
+          className="group transition-transform duration-300 hover:scale-105"
+          aria-label={`${skill.name} proficiency`}
+        >
+          {/* Circular Card with Gauge Ring */}
+          <div
+            className="relative w-56 h-56 mx-auto rounded-full p-1 shadow-sm"
+            style={{
+              background: `conic-gradient(#2563eb ${skill.level}%, #e5e7eb ${skill.level}% 100%)`
+            }}
+          >
+            {/* Inner circle (content area) */}
+            <div className="absolute inset-1 rounded-full bg-white shadow-md flex flex-col items-center justify-center text-center px-5">
+              <div className="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary-200 transition-colors duration-200">
+                <skill.icon size={28} className="text-primary-600" />
               </div>
-            ))}
+
+              <h3 className="text-base font-semibold text-gray-900">
+                {skill.name}
+              </h3>
+
+              {/* Put your text INSIDE the circle */}
+              <p className="mt-2 text-xs leading-snug text-gray-600 line-clamp-4">
+                {skill.description}
+              </p>
+            </div>
+
+            {/* Optional: small tip/dot showing the end of the gauge */}
+            <div
+              className="absolute left-1/2 top-1 -translate-x-1/2"
+              style={{ transform: `translateX(-50%) rotate(${(skill.level / 100) * 360}deg)` }}
+            >
+              <div className="w-2 h-2 bg-primary-600 rounded-full translate-y-[-6px]" />
+            </div>
           </div>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* CTA Section */}
       <section className="section-padding bg-primary-600">

@@ -48,9 +48,9 @@ export const blogPosts = [
     contentFile: 'master-thesis.html',
   },
   {
-    slug: 'bachlor-thesis-cloud-switch',
+    slug: 'bachlor-thesis-cloud-socket',
     title: 'Smart Plug (Bachelor Thesis)',
-    image: '/images/thesis/cloud-switch-hero.jpg',
+    image: '/images/bs/header.png',
     description: 'ESP32-based dual 10A smart socket measuring power, temperature, and humidity via MQTT; built as my B.S. thesis at K. N. Toosi University.',
     date: '2018-06-01',
     contentFile: 'bachlor-thesis.html',
