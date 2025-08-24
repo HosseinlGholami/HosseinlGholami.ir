@@ -8,18 +8,42 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-50 to-blue-100 section-padding">
+      <section className="bg-gradient-to-br from-primary-50 to-blue-100 section-padding px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+            {/* IMAGE first on mobile, second on desktop */}
+            <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
+              <div className="w-full max-w-sm lg:max-w-none">
+                <div className="relative mx-auto lg:ml-auto lg:mr-0">
+                  {/* Faded background circle (hidden on small screens) */}
+                  <div className="hidden sm:block absolute -top-4 -right-4 rounded-full bg-primary-600/10 w-72 h-72 md:w-80 md:h-80" />
+                  {/* Gradient circle with image inside */}
+                  <div className="relative rounded-full overflow-hidden bg-gradient-to-br from-primary-400 to-blue-500 w-56 h-56 sm:w-72 sm:h-72 md:w-80 md:h-80 mx-auto">
+                    <img
+                      src={personalInfo.image}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* TEXT second on mobile, first on desktop */}
+            <div className="order-2 lg:order-1 space-y-6">
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
-                Hi,<br/>
-                I'm{' '}
-                <span className="text-primary-600">{personalInfo.name}</span>
+                <span className="inline-flex items-center gap-2">
+                  Hi <span aria-hidden>👋</span>,
+                </span>
+                <br />
+                I'm <span className="text-primary-600">{personalInfo.name}</span>
               </h1>
+
               <p className="text-xl text-gray-600 leading-relaxed">
                 {personalInfo.description}
               </p>
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <a
                   href="/file/HosseinGholamiCV.pdf"
@@ -29,147 +53,99 @@ const Home = () => {
                   Download CV
                   <Download size={20} className="ml-2" />
                 </a>
-                {/* <Link
-                  to="/open-source"
-                  className="btn-secondary inline-flex items-center justify-center"
-                >
-                  Open Source Projects
-                </Link> */}
-              </div>
-            </div>
-              <div className="flex justify-center lg:justify-end">
-                <div className="relative">
-                  {/* Background faded circle */}
-                  <div className="w-80 h-80 bg-primary-600 rounded-full opacity-10 absolute -top-4 -right-4"></div>
-
-                  {/* Gradient circle with image inside */}
-                  <div className="w-80 h-80 bg-gradient-to-br from-primary-400 to-blue-500 rounded-full flex items-center justify-center relative overflow-hidden">
-                    <img 
-                      src={personalInfo.image} 
-                      alt="Profile"
-                      className="w-full h-full object-cover rounded-full" 
-                    />
-                  </div>
-                </div>
-              </div>
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section className="section-padding bg-white">
-        <div className="max-w-7xl mx-auto">          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h3 className="text-2xl font-semibold text-gray-900">
-                My Journey
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                {personalInfo.about.journey}
-              </p>
-              <p className="text-gray-600 leading-relaxed">
-                {personalInfo.about.philosophy}
-              </p>
-              <div className="flex flex-wrap gap-4">
-                {personalInfo.about.tags.map((tag, index) => (
-                  <div key={index} className="bg-primary-100 text-primary-800 px-4 py-2 rounded-full text-sm font-medium">
-                    {tag}
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="bg-gray-50 rounded-2xl p-8">
-              <h4 className="text-xl font-semibold text-gray-900 mb-6">Quick Facts</h4>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Years of Experience</span>
-                  <span className="font-semibold text-gray-900">{personalInfo.stats.experience}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Projects Completed</span>
-                  <span className="font-semibold text-gray-900">{personalInfo.stats.projects}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Open Source Contributions</span>
-                  <span className="font-semibold text-gray-900">{personalInfo.stats.openSource}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Technologies Mastered</span>
-                  <span className="font-semibold text-gray-900">{personalInfo.stats.technologies}</span>
-                </div>
+                {/* <Link to="/open-source" className="btn-secondary inline-flex items-center justify-center">Open Source Projects</Link> */}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-{/* Skills Section */}
-<section className="section-padding bg-gray-50">
+{/* About Section */}
+<section className="section-padding bg-white px-4">
   <div className="max-w-7xl mx-auto">
-    <div className="text-center mb-16">
-      <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-        Skills & Expertise
-      </h2>
-      <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-        I specialize in IoT and embedded systems, building solutions that seamlessly 
-        connect devices to the cloud. My experience spans firmware, backend services, 
-        and modern frontend technologies.
-      </p>
-    </div>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      {skills.map((skill, index) => (
-        <div
-          key={index}
-          className="group transition-transform duration-300 hover:scale-105"
-          aria-label={`${skill.name} proficiency`}
-        >
-          {/* Circular Card with Gauge Ring */}
-          <div
-            className="relative w-56 h-56 mx-auto rounded-full p-1 shadow-sm"
-            style={{
-              background: `conic-gradient(#2563eb ${skill.level}%, #e5e7eb ${skill.level}% 100%)`
-            }}
-          >
-            {/* Inner circle (content area) */}
-            <div className="absolute inset-1 rounded-full bg-white shadow-md flex flex-col items-center justify-center text-center px-5">
-              <div className="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary-200 transition-colors duration-200">
-                <skill.icon size={28} className="text-primary-600" />
-              </div>
-
-              <h3 className="text-base font-semibold text-gray-900">
-                {skill.name}
-              </h3>
-
-              {/* Put your text INSIDE the circle */}
-              <p className="mt-2 text-xs leading-snug text-gray-600 line-clamp-4">
-                {skill.description}
-              </p>
-            </div>
-
-            {/* Optional: small tip/dot showing the end of the gauge */}
+    {/* Always 1 column */}
+    <div className="grid grid-cols-1 gap-12 items-start">
+      {/* My Journey */}
+      <div className="space-y-6">
+        <h3 className="text-2xl font-semibold text-gray-900">My Journey</h3>
+        <p className="text-gray-600 leading-relaxed">
+          {personalInfo.about.journey}
+        </p>
+        <p className="text-gray-600 leading-relaxed">
+          {personalInfo.about.philosophy}
+        </p>
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          {personalInfo.about.tags.map((tag, index) => (
             <div
-              className="absolute left-1/2 top-1 -translate-x-1/2"
-              style={{ transform: `translateX(-50%) rotate(${(skill.level / 100) * 360}deg)` }}
+              key={index}
+              className="bg-primary-100 text-primary-800 px-3 py-1.5 rounded-full text-sm font-medium"
             >
-              <div className="w-2 h-2 bg-primary-600 rounded-full translate-y-[-6px]" />
+              {tag}
             </div>
-          </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   </div>
 </section>
 
+      {/* Skills Section */}
+      <section className="section-padding bg-gray-50 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Skills &amp; Expertise</h2>
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+              I specialize in IoT and embedded systems, building solutions that seamlessly connect devices to the cloud.
+              My experience spans firmware, backend services, and modern frontend technologies.
+            </p>
+          </div>
+
+          {/* <= md: 2 cols | md: 2 cols | lg: 4 cols */}
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 place-items-center">
+            {skills.map((skill, index) => (
+              <div
+                key={index}
+                className="group transition-transform duration-300 hover:scale-105"
+                aria-label={`${skill.name} proficiency`}
+              >
+                {/* Circular Card with Gauge Ring */}
+                <div
+                  className="relative w-36 h-36 sm:w-44 sm:h-44 lg:w-56 lg:h-56 mx-auto rounded-full p-1 shadow-sm"
+                  style={{
+                    background: `conic-gradient(#2563eb ${skill.level}%, #e5e7eb ${skill.level}% 100%)`,
+                  }}
+                >
+                  {/* Inner circle */}
+                  <div className="absolute inset-1 rounded-full bg-white shadow-md flex flex-col items-center justify-center text-center px-3 sm:px-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:bg-primary-200 transition-colors duration-200">
+                      <skill.icon size={22} className="text-primary-600" />
+                    </div>
+                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900">{skill.name}</h3>
+                    <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs leading-snug text-gray-600 line-clamp-3">
+                      {skill.description}
+                    </p>
+                  </div>
+
+                  {/* Gauge tip/dot */}
+                  <div
+                    className="absolute left-1/2 top-1 -translate-x-1/2"
+                    style={{ transform: `translateX(-50%) rotate(${(skill.level / 100) * 360}deg)` }}
+                  >
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-600 rounded-full -translate-y-1.5" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="section-padding bg-primary-600">
+      <section className="section-padding bg-primary-600 px-4">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Let's Work Together
-          </h2>
-          <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-            I'm always interested in new opportunities and exciting projects. 
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Let's Work Together</h2>
+          <p className="text-lg md:text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
+            I'm always interested in new opportunities and exciting projects.
             Whether you have a question or just want to say hi, feel free to reach out!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -193,4 +169,4 @@ const Home = () => {
   );
 };
 
-export default Home; 
+export default Home;
