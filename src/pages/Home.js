@@ -4,6 +4,82 @@ import { ArrowRight, Download } from 'lucide-react';
 import { personalInfo } from '../data/personalInfo';
 import { skills } from '../data/skills';
 
+/** ---------- Small, precise SVG gauge ---------- */
+function GaugeRing({
+  level,               // 0–100
+  Icon,                // lucide icon component
+  title,
+  description,
+  className = '',
+}) {
+  // SVG geometry (kept simple + consistent)
+  const size = 120;             // viewBox is square
+  const cx = size / 2;
+  const cy = size / 2;
+  const stroke = 6;             // ring thickness
+  const r = cx - stroke - 2;    // radius with padding
+  const C = 2 * Math.PI * r;
+
+  // Progress arc
+  const pct = Math.max(0, Math.min(100, level));
+  const dash = (pct / 100) * C;
+
+  // Tip/dot coordinates (start at -90°, i.e. 12 o’clock)
+  const angleDeg = -90 + (pct / 100) * 360;
+  const angleRad = (angleDeg * Math.PI) / 180;
+  const tipCx = cx + r * Math.cos(angleRad);
+  const tipCy = cy + r * Math.sin(angleRad);
+
+  return (
+    <div
+      className={`relative rounded-full shadow-sm bg-white flex items-center justify-center ${className}`}
+      style={{ aspectRatio: '1 / 1' }}
+    >
+      <svg
+        viewBox={`0 0 ${size} ${size}`}
+        className="absolute inset-0"
+        aria-hidden
+      >
+        {/* background track */}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="none"
+          stroke="#e5e7eb"           // gray-200
+          strokeWidth={stroke}
+        />
+        {/* progress ring */}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="none"
+          stroke="#2563eb"           // primary-600
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={`${dash} ${C - dash}`}
+          transform={`rotate(-90 ${cx} ${cy})`}  // start at 12 o’clock
+        />
+        {/* tip/dot at the exact end */}
+        <circle cx={tipCx} cy={tipCy} r={3.5} fill="#2563eb" />
+      </svg>
+
+      {/* inner content */}
+      <div className="relative z-10 w-[72%] h-[72%] rounded-full bg-white/95 shadow flex flex-col items-center justify-center text-center px-2 sm:px-3">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-full flex items-center justify-center mb-2 sm:mb-3">
+          {Icon ? <Icon size={22} className="text-primary-600" /> : null}
+        </div>
+        <h3 className="text-xs sm:text-sm font-semibold text-gray-900">{title}</h3>
+        <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs leading-snug text-gray-600 line-clamp-3">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** -------------------- Page -------------------- */
 const Home = () => {
   return (
     <div className="min-h-screen">
@@ -15,9 +91,7 @@ const Home = () => {
             <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
               <div className="w-full max-w-sm lg:max-w-none">
                 <div className="relative mx-auto lg:ml-auto lg:mr-0">
-                  {/* Faded background circle (hidden on small screens) */}
                   <div className="hidden sm:block absolute -top-4 -right-4 rounded-full bg-primary-600/10 w-72 h-72 md:w-80 md:h-80" />
-                  {/* Gradient circle with image inside */}
                   <div className="relative rounded-full overflow-hidden bg-gradient-to-br from-primary-400 to-blue-500 w-56 h-56 sm:w-72 sm:h-72 md:w-80 md:h-80 mx-auto">
                     <img
                       src={personalInfo.image}
@@ -53,14 +127,13 @@ const Home = () => {
                   Download CV
                   <Download size={20} className="ml-2" />
                 </a>
-                {/* <Link to="/open-source" className="btn-secondary inline-flex items-center justify-center">Open Source Projects</Link> */}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-{/* About Section */}
+     {/* About Section */}
 <section className="section-padding bg-white px-4">
   <div className="max-w-7xl mx-auto">
     {/* Always 1 column */}
@@ -89,6 +162,7 @@ const Home = () => {
   </div>
 </section>
 
+
       {/* Skills Section */}
       <section className="section-padding bg-gray-50 px-4">
         <div className="max-w-7xl mx-auto">
@@ -100,40 +174,17 @@ const Home = () => {
             </p>
           </div>
 
-          {/* <= md: 2 cols | md: 2 cols | lg: 4 cols */}
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 place-items-center">
-            {skills.map((skill, index) => (
-              <div
-                key={index}
-                className="group transition-transform duration-300 hover:scale-105"
-                aria-label={`${skill.name} proficiency`}
-              >
-                {/* Circular Card with Gauge Ring */}
-                <div
-                  className="relative w-36 h-36 sm:w-44 sm:h-44 lg:w-56 lg:h-56 mx-auto rounded-full p-1 shadow-sm"
-                  style={{
-                    background: `conic-gradient(#2563eb ${skill.level}%, #e5e7eb ${skill.level}% 100%)`,
-                  }}
-                >
-                  {/* Inner circle */}
-                  <div className="absolute inset-1 rounded-full bg-white shadow-md flex flex-col items-center justify-center text-center px-3 sm:px-4">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary-100 rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:bg-primary-200 transition-colors duration-200">
-                      <skill.icon size={22} className="text-primary-600" />
-                    </div>
-                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900">{skill.name}</h3>
-                    <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs leading-snug text-gray-600 line-clamp-3">
-                      {skill.description}
-                    </p>
-                  </div>
-
-                  {/* Gauge tip/dot */}
-                  <div
-                    className="absolute left-1/2 top-1 -translate-x-1/2"
-                    style={{ transform: `translateX(-50%) rotate(${(skill.level / 100) * 360}deg)` }}
-                  >
-                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary-600 rounded-full -translate-y-1.5" />
-                  </div>
-                </div>
+          {/* ≤ md: 2 cols | md: 2 cols | lg: 4 cols */}
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {skills.map((skill, i) => (
+              <div key={i} className="flex items-center justify-center">
+                <GaugeRing
+                  level={skill.level}
+                  Icon={skill.icon}
+                  title={skill.name}
+                  description={skill.description}
+                  className="w-36 sm:w-44 lg:w-56"
+                />
               </div>
             ))}
           </div>
