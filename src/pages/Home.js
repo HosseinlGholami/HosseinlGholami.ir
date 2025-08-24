@@ -168,10 +168,11 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Skills &amp; Expertise</h2>
-            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              I specialize in IoT and embedded systems, building solutions that seamlessly connect devices to the cloud.
-              My experience spans firmware, backend services, and modern frontend technologies.
-            </p>
+              <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+                I specialize in IoT and embedded systems, building solutions that seamlessly connect devices to the cloud.
+                My experience spans firmware development, backend services, and modern frontend technologies —
+                enabling me to deliver reliable end-to-end systems from device hardware up to user.
+              </p>
           </div>
 
           {/* ≤ md: 2 cols | md: 2 cols | lg: 4 cols */}
