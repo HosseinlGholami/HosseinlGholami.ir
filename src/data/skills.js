@@ -4,13 +4,13 @@ export const skills = [
   { 
     name: 'Embedded & IoT Development', 
     icon: Smartphone, 
-    description: 'ESP32, STM32, MediaTek, Quectel, AiThinker', 
-    level: 100 
+    description: 'ESP32, STM32, MediaTek, RTOS', 
+    level: 90 
   },
   { 
     name: 'Backend Development', 
     icon: Database, 
-    description: 'Django, FastAPI, Flask, RabbitMQ, Redis, SQL/NoSQL', 
+    description: 'Django, FastAPI, Celery, RabbitMQ, Redis, SQL/NoSQL', 
     level: 75 
   },
   { 
@@ -22,7 +22,7 @@ export const skills = [
   { 
     name: 'DevOps & Tools', 
     icon: Zap, 
-    description: 'Docker, Git, Linux, Jira, CI/CD', 
+    description: 'Docker, Git, Linux', 
     level: 75 
   }
 ];
