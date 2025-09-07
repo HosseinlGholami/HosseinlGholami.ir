@@ -10,15 +10,15 @@ export const blogPosts = [
   {
     slug: 'put-to-light-v2',
     title: 'Put-to-Light V2',
-    image: '/images/p2l/p2lv1.jpg',
+    image: '/images/p2l-v2/p2l.png',
     description: 'A Deep Dive into the Put-to-Light Warehouse System: Architecture, Components, and Deployment at Scale',
     date: '2024-06-29',
-    contentFile: 'put-to-light-v1.html',
+    contentFile: 'put-to-light-v2.html',
   },
   {
     slug: 'put-to-light-v1',
     title: 'Put-to-Light V1',
-    image: '/images/p2l/p2lv1.jpg',
+    image: '/images/p2l-v1/p2lv1.jpg',
     description: 'A Deep Dive into the Put-to-Light Warehouse System: Architecture, Components, and Deployment at Scale',
     date: '2024-06-29',
     contentFile: 'put-to-light-v1.html',
