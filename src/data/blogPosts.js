@@ -1,6 +1,6 @@
 export const blogPosts = [
   {
-    slug: 'dimension detection',
+    slug: 'dimension-detection',
     title: 'Dimension detection',
     image: '/images/dd/dd.JPG',
     description: 'From AI-assisted vision and Lidar scanning to accurate, scalable dimensioning at industrial scale',
